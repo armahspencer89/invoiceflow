@@ -25,6 +25,10 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('vat_number')->nullable();
 
+            // Customers are active by default.
+            // Deactivation will preserve the customer and their historical data.
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }
