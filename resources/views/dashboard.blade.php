@@ -1,22 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - InvoiceFlow</title>
-</head>
-<body>
 
-<h1>InvoiceFlow Dashboard</h1>
+@extends('layouts.app')
 
-<p>Welcome, {{ auth()->user()->name }}!</p>
+@section('title', 'Dashboard - InvoiceFlow')
 
-<p>You are successfully authenticated.</p>
+@section('content')
 
-<form method="POST" action="/logout">
-    @csrf
-    <button type="submit">Logout</button>
-</form>
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">
+                Welcome back, {{ auth()->user()->name }}!
+                Here's an overview of your InvoiceFlow workspace.
+            </p>
+        </div>
 
-</body>
-</html>
+        <a href="{{ route('invoices.create') }}" class="btn-primary">
+            + Create Invoice
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>Welcome to InvoiceFlow</h2>
+
+        <p>
+            Manage your customers, create invoices, and track payments
+            from one place.
+        </p>
+
+        <div class="flex flex-wrap gap-3 mt-5">
+            <a href="{{ route('customers.index') }}" class="btn-secondary">
+                View Customers
+            </a>
+
+            <a href="{{ route('invoices.index') }}" class="btn-primary">
+                View Invoices
+            </a>
+        </div>
+    </div>
+
+@endsection
