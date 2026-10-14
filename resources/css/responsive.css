@@ -1,6 +1,15 @@
-/* InvoiceFlow — responsive */
+
+/* ==========================================
+   InvoiceFlow — Global Responsive Styles
+
+   Sidebar and mobile navigation are handled
+   by layouts/app-layout.css.
+========================================== */
+
+/* TABLET / SMALL DESKTOP */
 
 @media (max-width: 1024px) {
+
     .sidebar {
         width: 220px;
     }
@@ -8,89 +17,61 @@
     .page-content {
         padding: 28px;
     }
+
+    .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
+/* TABLET / MOBILE */
+
 @media (max-width: 768px) {
-    .app-layout {
-        flex-direction: column;
-    }
 
-    .sidebar {
-        width: 100%;
-        min-height: auto;
-        padding: 14px;
-    }
-
-    .sidebar-brand {
-        padding: 0 4px 16px;
-    }
-
-    .sidebar-section-label,
-    .sidebar-bottom {
-        display: none;
-    }
-
-    .sidebar-nav {
-        flex-direction: row;
-        overflow-x: auto;
-        gap: 8px;
-    }
-
-    .sidebar-link {
-        padding: 10px 12px;
-        white-space: nowrap;
-    }
-
-    .topbar {
-        height: 60px;
-        padding: 0 18px;
-    }
-
-    .page-content {
-        padding: 20px 16px;
-    }
-
-    .topbar-username {
-        display: none;
-    }
+    /*
+     * Do not override .sidebar, .app-layout,
+     * or .app-main here.
+     *
+     * The slide-out navigation is controlled
+     * by layouts/app-layout.css.
+     */
 
     .page-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .page-title {
-        font-size: 24px;
-    }
-
-    .card {
-        padding: 18px;
+    .page-header > a,
+    .page-header > button {
+        max-width: 100%;
     }
 
     .table-container {
+        max-width: 100%;
         overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
     }
 }
 
+/* SMALL MOBILE */
+
 @media (max-width: 480px) {
-    .page-content {
-        padding: 16px 12px;
+
+    .page-header {
+        gap: 14px;
     }
 
-    .topbar {
-        padding: 0 12px;
+    .page-subtitle {
+        line-height: 1.6;
     }
 
-    .sidebar-link {
-        font-size: 13px;
-        padding: 9px 10px;
-    }
-
-    .nav-icon {
-        font-size: 17px;
-    }
-
-    .card {
-        padding: 14px;
+    .form-input,
+    .form-select,
+    .form-textarea {
+        max-width: 100%;
     }
 }
