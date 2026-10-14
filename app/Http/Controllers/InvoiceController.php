@@ -114,7 +114,13 @@ class InvoiceController extends Controller
         // User → Customer → Invoice.
         Gate::authorize('view', $invoice);
 
-        $invoice->load(['customer', 'lines']);
+        $invoice->load([
+            'customer',
+            'lines',
+            'payments' => fn ($query) =>
+            $query->orderByDesc('payment_date')
+                ->orderByDesc('id'),
+        ]);
 
         return view('invoices.show', compact('invoice'));
     }
