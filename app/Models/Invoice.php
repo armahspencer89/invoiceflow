@@ -40,4 +40,38 @@ class Invoice extends Model
     {
         return $this->hasMany(Payment::class);
     }
+    /**
+     * Calculate the invoice subtotal before VAT.
+     */
+    public function subtotal(): float
+    {
+        return round(
+            $this->lines->sum(function ($line) {
+                return (float) $line->quantity * (float) $line->unit_price;
+            }),
+            2
+        );
+    }
+
+    /**
+     * Calculate VAT based on the subtotal.
+     */
+    public function vatAmount(): float
+    {
+        return round(
+            $this->subtotal() * ((float) $this->vat_rate / 100),
+            2
+        );
+    }
+
+    /**
+     * Calculate the invoice total including VAT.
+     */
+    public function total(): float
+    {
+        return round(
+            $this->subtotal() + $this->vatAmount(),
+            2
+        );
+    }
 }

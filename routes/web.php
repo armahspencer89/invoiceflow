@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,3 +41,29 @@ Route::patch('/customers/{customer}/reactivate', [CustomerController::class, 're
 Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])
     ->middleware('auth')
     ->name('customers.destroy');
+
+// Invoice Routes
+Route::get('/invoices', [InvoiceController::class, 'index'])
+    ->middleware('auth')
+    ->name('invoices.index');
+Route::post('/invoices', [InvoiceController::class, 'store'])
+    ->middleware('auth')
+    ->name('invoices.store');
+Route::get('/invoices/create', [InvoiceController::class, 'create'])
+    ->middleware('auth')
+    ->name('invoices.create');
+Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
+    ->middleware('auth')
+    ->name('invoices.show');
+Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])
+    ->middleware('auth')
+    ->name('invoices.edit');
+Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])
+    ->middleware('auth')
+    ->name('invoices.update');
+Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('invoices.destroy');
+Route::patch('/invoices/{invoice}/send', [InvoiceController::class, 'markAsSent'])
+    ->middleware('auth')
+    ->name('invoices.send');
