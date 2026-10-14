@@ -1,59 +1,296 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# InvoiceFlow
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**A SaaS-style invoice and payment management application built with Laravel.**
 
-## About Laravel
+InvoiceFlow is an independent full-stack portfolio project designed to help freelancers and small businesses manage customers, create invoices, track payments, and monitor outstanding balances through a simple, responsive interface.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The project demonstrates practical Laravel development, relational database design, authentication, authorization, financial calculations, automated testing, and modern UI/UX practices.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> **Project status:** In active development — core customer, invoicing, and payment workflows implemented. PDF generation and email delivery are planned.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+### Authentication and Security
+- User registration, login, and logout
+- Password reset functionality using Laravel Fortify
+- User-specific customer and invoice records
+- Laravel policies for authorization
+- Server-side request validation
+- CSRF protection
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Customer Management
+- Create, view, edit, and manage customers
+- Store customer contact and business information
+- Activate and deactivate customer records
+- Restrict customer access to the authenticated owner
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Invoice Management
+- Create invoices with multiple line items
+- Assign invoices to customers
+- Set invoice dates, due dates, and VAT rates
+- Automatically calculate subtotals, VAT, and invoice totals
+- Edit and delete draft invoices
+- Mark draft invoices as sent
+- Prevent editing after an invoice has been sent
+- Search and filter invoices by status
 
-## Laravel Sponsors
+### Payment Management
+- Record full and partial payments
+- Support bank transfer, cash, card, and other payment methods
+- Store payment dates, references, and notes
+- Automatically update outstanding balances
+- Prevent payments exceeding the remaining balance
+- Automatically mark fully paid invoices as paid
+- Display payment history
+- Identify overdue invoices
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Dashboard and User Interface
+- Financial dashboard with invoice statistics
+- Recent invoice overview
+- Responsive desktop and mobile layouts
+- Sidebar navigation and mobile menu
+- Status badges and financial summaries
+- Dynamic invoice line items
+- Live estimated invoice totals
+- Validation feedback and confirmation dialogs
 
-### Premium Partners
+## Technology Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Category | Technology |
+|---|---|
+| Backend | PHP 8.2+, Laravel 12 |
+| Frontend | Laravel Blade, HTML, CSS, JavaScript |
+| Styling | Tailwind CSS v4, custom modular CSS |
+| Database | MySQL |
+| Authentication | Laravel Fortify |
+| ORM | Laravel Eloquent |
+| Asset Bundling | Vite |
+| Dependency Management | Composer, npm |
+| Testing | Laravel's PHP testing tools |
+| Version Control | Git and GitHub |
 
-## Contributing
+## Application Workflow
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+InvoiceFlow follows a straightforward invoice-to-payment workflow:
 
-## Code of Conduct
+1. **Register or log in** to access a private workspace.
+2. **Create customers** and maintain their information.
+3. **Create an invoice** with one or more products or services.
+4. **Review the invoice** and its calculated totals.
+5. **Mark the invoice as sent** when it is ready to issue.
+6. **Record payments** as the customer pays.
+7. **Track the balance** until the invoice is fully paid.
+8. **Monitor overdue invoices** and payment history.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Invoice statuses include Draft, Sent, Partially Paid, Paid, and Overdue. Partial and overdue states are calculated from invoice and payment information.
 
-## Security Vulnerabilities
+## Installation and Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prerequisites
+
+Ensure the following are installed:
+
+- PHP 8.2 or newer
+- Composer
+- Node.js and npm
+- MySQL
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/armahspencer89/invoiceflow.git
+cd invoiceflow
+```
+
+### 2. Install PHP dependencies
+
+```bash
+composer install
+```
+
+### 3. Install frontend dependencies
+
+```bash
+npm install
+```
+
+### 4. Configure environment variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+### 5. Configure MySQL
+
+Create a MySQL database named `invoiceflow`.
+
+Update the database settings in `.env`:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=invoiceflow
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Adjust the database username and password for your local environment.
+
+### 6. Run database migrations
+
+```bash
+php artisan migrate
+```
+
+### 7. Start the application
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+In another terminal, start Vite:
+
+```bash
+npm run dev
+```
+
+Visit:
+
+`http://127.0.0.1:8000`
+
+Register an account to begin using InvoiceFlow.
+
+## Running Tests
+
+Run the automated test suite:
+
+```bash
+php artisan test
+```
+
+Build the frontend assets:
+
+```bash
+npm run build
+```
+
+The project includes feature tests covering payment management, authorization, and invoice-related business rules.
+
+## Project Architecture
+
+InvoiceFlow follows Laravel's MVC architecture.
+
+```text
+app/
+├── Http/
+│   ├── Controllers/
+│   └── Requests/
+├── Models/
+├── Policies/
+└── Support/
+    └── Money.php
+
+database/
+└── migrations/
+
+resources/
+├── css/
+│   ├── components/
+│   ├── layouts/
+│   └── pages/
+├── js/
+└── views/
+    ├── auth/
+    ├── customers/
+    ├── invoices/
+    └── layouts/
+
+routes/
+└── web.php
+
+tests/
+└── Feature/
+```
+
+### Key Design Decisions
+
+**Ownership-based authorization:** Customer and invoice records are restricted to their authenticated owners using Laravel policies.
+
+**Accurate monetary calculations:** Invoice and payment calculations use integer cents and a dedicated money utility to reduce floating-point errors.
+
+**Transactional payment recording:** Payment processing uses database transactions and row locking to protect against concurrent overpayments.
+
+**Separation of concerns:** Controllers, models, validation requests, policies, and views have distinct responsibilities.
+
+**Modular styling:** CSS is organized into reusable components, application layouts, and page-specific stylesheets.
+
+## Development Roadmap
+
+| Milestone | Status |
+|---|---|
+| Laravel project setup and database configuration | Complete |
+| Authentication and user accounts | Complete |
+| Customer management | Complete |
+| Invoice creation and management | Complete |
+| Invoice calculations and status management | Complete |
+| Payment recording and outstanding balances | Complete |
+| Financial dashboard | Complete |
+| Responsive UI/UX redesign | Complete |
+| Professional PDF invoice generation | Planned |
+| Email invoice delivery | Planned |
+| Further testing and production readiness | Planned |
+| Deployment | Planned |
+
+## Screenshots
+
+Application screenshots will be added to showcase the dashboard, customer management, invoice creation, and payment tracking interfaces.
+
+## Project Purpose
+
+InvoiceFlow was developed as an independent portfolio project to strengthen practical software engineering skills and explore the development of SaaS applications.
+
+Its goals include:
+
+- Building a real-world application beyond classroom assignments
+- Applying Laravel backend and database concepts
+- Implementing secure multi-user data access
+- Developing reliable financial business logic
+- Practicing automated testing and Git workflows
+- Designing a responsive, user-friendly application
+- Exploring the process of turning a software idea into a usable product
+
+## Future Improvements
+
+Planned enhancements include professional PDF invoices, email delivery, improved automated test coverage, and deployment.
+
+The longer-term goal is to explore InvoiceFlow's potential as a practical invoicing product for freelancers and small businesses.
+
+## Author
+
+**Spencer Armah**
+
+Application Development student at Thomas More University of Applied Sciences, Belgium.
+
+GitHub: [@armahspencer89](https://github.com/armahspencer89)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+No open-source license has been specified for this project.
