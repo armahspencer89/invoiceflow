@@ -1,95 +1,182 @@
+
 @extends('layouts.app')
 
-@section('title', 'Customer Details')
+@section('title', 'Customer Details - InvoiceFlow')
 
 @section('content')
-    <div>
-        <h1>Customer Details</h1>
 
-        {{-- Display the customer's stored information. --}}
-        <p><strong>Name:</strong> {{ $customer->name }}</p>
-
-        @if ($customer->company)
-            <p><strong>Company:</strong> {{ $customer->company }}</p>
-        @endif
-
-        <p><strong>Email:</strong> {{ $customer->email }}</p>
-
-        @if ($customer->phone)
-            <p><strong>Phone:</strong> {{ $customer->phone }}</p>
-        @endif
-
-        @if ($customer->address)
-            <p><strong>Address:</strong> {{ $customer->address }}</p>
-        @endif
-
-        @if ($customer->vat_number)
-            <p><strong>VAT Number:</strong> {{ $customer->vat_number }}</p>
-        @endif
-
+    <div class="page-header">
         <div>
-            <strong>Status:</strong>
+            <h1 class="page-title">{{ $customer->name }}</h1>
 
-            @if ($customer->is_active)
-                Active
-            @else
-                Inactive
-            @endif
+            <p class="page-subtitle">
+                View and manage this customer's information.
+            </p>
         </div>
 
-        {{-- We'll add the customer's invoices here later. --}}
-        <a href="{{ route('customers.edit', $customer) }}">
-            Edit Customer
-        </a>
-
-        @if ($customer->is_active)
-            <form
-                method="POST"
-                action="{{ route('customers.deactivate', $customer) }}"
-            >
-                @csrf
-
-                {{-- HTML forms only support GET and POST.
-                     Laravel's method spoofing lets us send a PATCH request. --}}
-                @method('PATCH')
-
-                <button type="submit">
-                    Deactivate Customer
-                </button>
-            </form>
-        @else
-            <form
-                method="POST"
-                action="{{ route('customers.reactivate', $customer) }}"
-            >
-                @csrf
-
-                {{-- Laravel's method spoofing lets this HTML form send a PATCH request. --}}
-                @method('PATCH')
-
-                <button type="submit">
-                    Reactivate Customer
-                </button>
-            </form>
-        @endif
-
-        <form
-            method="POST"
-            action="{{ route('customers.destroy', $customer) }}"
-        >
-            @csrf
-
-            {{-- HTML forms do not support DELETE directly.
-                 Laravel's method spoofing allows us to send a DELETE request. --}}
-            @method('DELETE')
-
-            <button type="submit">
-                Delete Customer
-            </button>
-        </form>
-
-        <a href="{{ route('customers.index') }}">
-            Back to Customers
+        <a href="{{ route('customers.index') }}"
+           class="btn-secondary">
+            ← Back to Customers
         </a>
     </div>
+
+    @if (session('success'))
+        <div class="alert alert-success" role="status">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="customer-details-layout">
+
+        <!-- CUSTOMER INFORMATION -->
+        <section class="card customer-details-card">
+
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Customer Information</h2>
+                    <p class="card-description">
+                        Contact and business details.
+                    </p>
+                </div>
+
+                @if ($customer->is_active)
+                    <span class="status-badge customers-active">
+                    Active
+                </span>
+                @else
+                    <span class="status-badge customers-inactive">
+                    Inactive
+                </span>
+                @endif
+            </div>
+
+            <dl class="customer-details-grid">
+
+                <div class="customer-detail-item">
+                    <dt>Customer Name</dt>
+                    <dd>{{ $customer->name }}</dd>
+                </div>
+
+                <div class="customer-detail-item">
+                    <dt>Company</dt>
+                    <dd>{{ $customer->company ?: '—' }}</dd>
+                </div>
+
+                <div class="customer-detail-item">
+                    <dt>Email Address</dt>
+                    <dd>
+                        <a href="mailto:{{ $customer->email }}">
+                            {{ $customer->email }}
+                        </a>
+                    </dd>
+                </div>
+
+                <div class="customer-detail-item">
+                    <dt>Phone Number</dt>
+                    <dd>
+                        @if ($customer->phone)
+                            <a href="tel:{{ $customer->phone }}">
+                                {{ $customer->phone }}
+                            </a>
+                        @else
+                            —
+                        @endif
+                    </dd>
+                </div>
+
+                <div class="customer-detail-item customer-detail-full">
+                    <dt>Address</dt>
+                    <dd class="customer-address">
+                        {{ $customer->address ?: '—' }}
+                    </dd>
+                </div>
+
+                <div class="customer-detail-item customer-detail-full">
+                    <dt>VAT Number</dt>
+                    <dd>{{ $customer->vat_number ?: '—' }}</dd>
+                </div>
+
+            </dl>
+
+        </section>
+
+        <!-- CUSTOMER ACTIONS -->
+        <section class="card customer-actions-card">
+
+            <h2 class="card-title">Manage Customer</h2>
+
+            <p class="card-description">
+                Update this customer's information or change
+                their account status.
+            </p>
+
+            <div class="customer-actions-list">
+
+                <a href="{{ route('customers.edit', $customer) }}"
+                   class="btn-primary customer-action-button">
+                    Edit Customer
+                </a>
+
+                @if ($customer->is_active)
+
+                    <form method="POST"
+                          action="{{ route('customers.deactivate', $customer) }}"
+                          onsubmit="return confirm('Deactivate this customer?')">
+
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                                class="btn-secondary customer-action-button">
+                            Deactivate Customer
+                        </button>
+                    </form>
+
+                @else
+
+                    <form method="POST"
+                          action="{{ route('customers.reactivate', $customer) }}">
+
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                                class="btn-secondary customer-action-button">
+                            Reactivate Customer
+                        </button>
+                    </form>
+
+                @endif
+
+            </div>
+
+            <div class="customer-danger-zone">
+
+                <h3>Danger Zone</h3>
+
+                <p>
+                    Permanently delete this customer.
+                    This action cannot be undone.
+                </p>
+
+                <form method="POST"
+                      action="{{ route('customers.destroy', $customer) }}"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this customer?')">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit"
+                            class="btn-danger customer-action-button">
+                        Delete Customer
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+
 @endsection
