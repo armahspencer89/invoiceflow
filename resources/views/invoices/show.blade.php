@@ -1,137 +1,45 @@
-@if (session('success'))
-    <p>{{ session('success') }}</p>
-@endif
 
-{{-- Invoice Status --}}
-<div>
-    <p>
-        <strong>Status:</strong>
-        {{ $invoice->displayStatus() }}
-    </p>
+@extends('layouts.app')
 
-    @if ($invoice->isOverdue())
-        <p>
-            <strong>Payment overdue!</strong>
-            This invoice was due on
-            {{ $invoice->due_date->format('d M Y') }}.
-        </p>
+@section('title', 'Invoice Details - InvoiceFlow')
+
+@section('content')
+
+    @php
+        $status = strtolower($invoice->displayStatus());
+        $totalCents = $invoice->totalCents();
+        $paidCents = $invoice->paidCents();
+        $balanceCents = $invoice->balanceCents();
+
+        $money = fn ($cents) => '€' . number_format($cents / 100, 2);
+    @endphp
+
+        <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                Invoice {{ $invoice->invoice_number }}
+            </h1>
+
+            <p class="page-subtitle">
+                View invoice details, track payments, and manage its status.
+            </p>
+        </div>
+
+        <a href="{{ route('invoices.index') }}" class="btn-secondary">
+            ← Back to Invoices
+        </a>
+    </div>
+
+    @if (session('success'))
+        <div class="alert alert-success" role="status">
+            {{ session('success') }}
+        </div>
     @endif
-</div>
-
-{{-- Invoice Status Actions --}}
-@if ($invoice->status === 'draft')
-    <form method="POST" action="{{ route('invoices.send', $invoice) }}">
-        @csrf
-        @method('PATCH')
-
-        <button
-            type="submit"
-            onclick="return confirm('Mark this invoice as sent? You will no longer be able to edit it.')"
-        >
-            Mark as Sent
-        </button>
-    </form>
-@endif
-
-@if ($invoice->status === 'draft')
-    <form
-        method="POST"
-        action="{{ route('invoices.destroy', $invoice) }}"
-        onsubmit="return confirm('Are you sure you want to delete this invoice? This cannot be undone.')"
-    >
-        @csrf
-        @method('DELETE')
-
-        <button type="submit">
-            Delete Invoice
-        </button>
-    </form>
-@endif
-
-{{-- Invoice Items --}}
-<h2>Invoice Items</h2>
-
-<table>
-    <thead>
-    <tr>
-        <th>Description</th>
-        <th>Quantity</th>
-        <th>Unit Price</th>
-        <th>Line Total</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    @foreach ($invoice->lines as $line)
-        <tr>
-            <td>{{ $line->description }}</td>
-
-            <td>{{ $line->quantity }}</td>
-
-            <td>
-                €{{ number_format((float) $line->unit_price, 2) }}
-            </td>
-
-            <td>
-                €{{ number_format(
-                        (float) $line->quantity * (float) $line->unit_price,
-                        2
-                    ) }}
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
-
-{{-- Invoice Totals --}}
-<div>
-    <p>
-        <strong>Subtotal:</strong>
-        €{{ number_format($invoice->subtotal(), 2) }}
-    </p>
-
-    <p>
-        <strong>VAT ({{ $invoice->vat_rate }}%):</strong>
-        €{{ number_format($invoice->vatAmount(), 2) }}
-    </p>
-
-    <p>
-        <strong>Total:</strong>
-        €{{ number_format($invoice->total(), 2) }}
-    </p>
-</div>
-
-{{-- Payment Management --}}
-<hr>
-
-<h2>Payment Management</h2>
-
-<div>
-    <p>
-        <strong>Invoice Total:</strong>
-        €{{ number_format($invoice->totalCents() / 100, 2) }}
-    </p>
-
-    <p>
-        <strong>Total Paid:</strong>
-        €{{ number_format($invoice->paidCents() / 100, 2) }}
-    </p>
-
-    <p>
-        <strong>Outstanding Balance:</strong>
-        <strong>
-            €{{ number_format($invoice->balanceCents() / 100, 2) }}
-        </strong>
-    </p>
-</div>
-
-{{-- Payment Form --}}
-@if ($invoice->status === 'sent' && $invoice->balanceCents() > 0)
-
-    <h3>Record Payment</h3>
 
     @if ($errors->any())
-        <div role="alert">
+        <div class="alert alert-danger" role="alert">
+            <strong>Please correct the following errors:</strong>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -140,200 +48,458 @@
         </div>
     @endif
 
-    <form
-        method="POST"
-        action="{{ route('invoices.payments.store', $invoice) }}"
-    >
-        @csrf
+    @if ($invoice->isOverdue())
+        <div class="alert alert-warning" role="alert">
+            <strong>Payment overdue!</strong>
+            This invoice was due on
+            {{ $invoice->due_date->format('d M Y') }}.
+        </div>
+    @endif
 
-        {{-- Payment Amount --}}
-        <div>
-            <label for="amount">
-                Payment Amount (€)
-            </label>
+    <!-- INVOICE SUMMARY -->
+    <div class="invoice-detail-layout">
 
-            <input
-                type="number"
-                id="amount"
-                name="amount"
-                step="0.01"
-                min="0.01"
-                max="{{ \App\Support\Money::format($invoice->balanceCents()) }}"
-                value="{{ old('amount') }}"
-                required
-            >
+        <section class="card invoice-detail-card">
 
-            @error('amount')
-            <p>{{ $message }}</p>
-            @enderror
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Invoice Information</h2>
+                    <p class="card-description">
+                        General information about this invoice.
+                    </p>
+                </div>
+
+                <span class="status-badge status-{{ $status }}">
+                {{ $status === 'partial' ? 'Partially Paid' : ucfirst($status) }}
+            </span>
+            </div>
+
+            <dl class="invoice-detail-grid">
+
+                <div class="invoice-detail-item">
+                    <dt>Invoice Number</dt>
+                    <dd>{{ $invoice->invoice_number }}</dd>
+                </div>
+
+                <div class="invoice-detail-item">
+                    <dt>Customer</dt>
+                    <dd>
+                        <a href="{{ route('customers.show', $invoice->customer) }}">
+                            {{ $invoice->customer->name }}
+                        </a>
+                    </dd>
+                </div>
+
+                <div class="invoice-detail-item">
+                    <dt>Invoice Date</dt>
+                    <dd>{{ $invoice->invoice_date->format('d M Y') }}</dd>
+                </div>
+
+                <div class="invoice-detail-item">
+                    <dt>Due Date</dt>
+                    <dd>{{ $invoice->due_date->format('d M Y') }}</dd>
+                </div>
+
+                <div class="invoice-detail-item">
+                    <dt>VAT Rate</dt>
+                    <dd>{{ $invoice->vat_rate }}%</dd>
+                </div>
+
+                <div class="invoice-detail-item">
+                    <dt>Payment Status</dt>
+                    <dd>
+                        {{ $status === 'partial' ? 'Partially Paid' : ucfirst($status) }}
+                    </dd>
+                </div>
+
+            </dl>
+
+        </section>
+
+        <!-- INVOICE ACTIONS -->
+        <section class="card invoice-actions-card">
+
+            <h2 class="card-title">Invoice Actions</h2>
+
+            <p class="card-description">
+                Manage this invoice based on its current status.
+            </p>
+
+            @if ($invoice->status === 'draft')
+
+                <div class="invoice-actions-list">
+
+                    <a href="{{ route('invoices.edit', $invoice) }}"
+                       class="btn-secondary invoice-action-button">
+                        Edit Invoice
+                    </a>
+
+                    <form method="POST"
+                          action="{{ route('invoices.send', $invoice) }}"
+                          onsubmit="return confirm('Mark this invoice as sent? You will no longer be able to edit it.')">
+
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                                class="btn-primary invoice-action-button">
+                            Mark as Sent
+                        </button>
+                    </form>
+
+                </div>
+
+                <div class="invoice-danger-zone">
+                    <h3>Danger Zone</h3>
+
+                    <p>
+                        Permanently delete this draft invoice.
+                        This action cannot be undone.
+                    </p>
+
+                    <form method="POST"
+                          action="{{ route('invoices.destroy', $invoice) }}"
+                          onsubmit="return confirm('Are you sure you want to delete this invoice? This cannot be undone.')">
+
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                                class="btn-danger invoice-action-button">
+                            Delete Invoice
+                        </button>
+                    </form>
+                </div>
+
+            @else
+
+                <div class="invoice-status-message">
+                    @if ($invoice->status === 'paid')
+                        This invoice has been fully paid.
+                    @else
+                        This invoice has been issued and can no longer be edited.
+                    @endif
+                </div>
+
+            @endif
+
+        </section>
+
+    </div>
+
+    <!-- INVOICE ITEMS -->
+    <section class="card invoice-detail-section">
+
+        <div class="invoice-section-heading">
+            <h2 class="card-title">Invoice Items</h2>
+            <p class="card-description">
+                Products and services included in this invoice.
+            </p>
         </div>
 
-        {{-- Payment Date --}}
-        <div>
-            <label for="payment_date">
-                Payment Date
-            </label>
+        <div class="table-container">
+            <table class="data-table invoice-items-table">
 
-            <input
-                type="date"
-                id="payment_date"
-                name="payment_date"
-                value="{{ old('payment_date', now()->toDateString()) }}"
-                max="{{ now()->toDateString() }}"
-                required
-            >
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Line Total</th>
+                </tr>
+                </thead>
 
-            @error('payment_date')
-            <p>{{ $message }}</p>
-            @enderror
+                <tbody>
+                @foreach ($invoice->lines as $line)
+                    <tr>
+                        <td>{{ $line->description }}</td>
+                        <td>{{ $line->quantity }}</td>
+                        <td>
+                            €{{ number_format((float) $line->unit_price, 2) }}
+                        </td>
+                        <td class="invoices-money">
+                            €{{ number_format(
+                                (float) $line->quantity * (float) $line->unit_price,
+                                2
+                            ) }}
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+
+            </table>
         </div>
 
-        {{-- Payment Method --}}
-        <div>
-            <label for="method">
-                Payment Method
-            </label>
+        <!-- TOTALS -->
+        <div class="invoice-detail-totals">
 
-            <select
-                id="method"
-                name="method"
-                required
-            >
-                <option value="">
-                    Select payment method
-                </option>
+            <div class="invoice-total-row">
+                <span>Subtotal</span>
+                <strong>{{ $money($invoice->subtotalCents()) }}</strong>
+            </div>
 
-                <option
-                    value="bank_transfer"
-                    @selected(old('method') === 'bank_transfer')
-                >
-                    Bank Transfer
-                </option>
+            <div class="invoice-total-row">
+                <span>VAT ({{ $invoice->vat_rate }}%)</span>
+                <strong>{{ $money($invoice->vatAmountCents()) }}</strong>
+            </div>
 
-                <option
-                    value="cash"
-                    @selected(old('method') === 'cash')
-                >
-                    Cash
-                </option>
+            <div class="invoice-total-row invoice-grand-total">
+                <span>Invoice Total</span>
+                <strong>{{ $money($totalCents) }}</strong>
+            </div>
 
-                <option
-                    value="card"
-                    @selected(old('method') === 'card')
-                >
-                    Card
-                </option>
-
-                <option
-                    value="other"
-                    @selected(old('method') === 'other')
-                >
-                    Other
-                </option>
-            </select>
-
-            @error('method')
-            <p>{{ $message }}</p>
-            @enderror
         </div>
 
-        {{-- Payment Reference --}}
-        <div>
-            <label for="reference">
-                Payment Reference (Optional)
-            </label>
+    </section>
 
-            <input
-                type="text"
-                id="reference"
-                name="reference"
-                maxlength="255"
-                value="{{ old('reference') }}"
-            >
+    <!-- PAYMENT MANAGEMENT -->
+    <section class="card invoice-detail-section">
 
-            @error('reference')
-            <p>{{ $message }}</p>
-            @enderror
+        <div class="invoice-section-heading">
+            <h2 class="card-title">Payment Management</h2>
+            <p class="card-description">
+                Track payments and monitor the outstanding balance.
+            </p>
         </div>
 
-        {{-- Payment Notes --}}
-        <div>
-            <label for="notes">
-                Notes (Optional)
-            </label>
+        <div class="invoice-payment-summary">
 
-            <textarea
-                id="notes"
-                name="notes"
-                maxlength="2000"
-            >{{ old('notes') }}</textarea>
+            <div class="invoice-payment-stat">
+                <span>Invoice Total</span>
+                <strong>{{ $money($totalCents) }}</strong>
+            </div>
 
-            @error('notes')
-            <p>{{ $message }}</p>
-            @enderror
+            <div class="invoice-payment-stat">
+                <span>Total Paid</span>
+                <strong>{{ $money($paidCents) }}</strong>
+            </div>
+
+            <div class="invoice-payment-stat invoice-payment-balance">
+                <span>Outstanding Balance</span>
+                <strong>{{ $money($balanceCents) }}</strong>
+            </div>
+
         </div>
 
-        <button type="submit">
-            Record Payment
-        </button>
-    </form>
+        @if ($invoice->status === 'sent' && $balanceCents > 0)
 
-@elseif ($invoice->status === 'paid')
+            <!-- RECORD PAYMENT -->
+            <div class="invoice-payment-form-section">
 
-    <p>
-        <strong>This invoice has been fully paid.</strong>
-    </p>
+                <h3>Record Payment</h3>
 
-@elseif ($invoice->status === 'draft')
+                <p class="card-description">
+                    Record a full or partial payment received from the customer.
+                </p>
 
-    <p>
-        Mark this invoice as Sent before recording payments.
-    </p>
+                <form method="POST"
+                      action="{{ route('invoices.payments.store', $invoice) }}">
 
-@endif
+                    @csrf
 
-{{-- Payment History --}}
-<h3>Payment History</h3>
+                    <div class="invoice-payment-form-grid">
 
-@if ($invoice->payments->isEmpty())
+                        <div class="form-group">
+                            <label for="amount" class="form-label">
+                                Payment Amount (€) *
+                            </label>
 
-    <p>
-        No payments have been recorded for this invoice.
-    </p>
+                            <input
+                                type="number"
+                                id="amount"
+                                name="amount"
+                                class="form-input"
+                                step="0.01"
+                                min="0.01"
+                                max="{{ \App\Support\Money::format($balanceCents) }}"
+                                value="{{ old('amount') }}"
+                                placeholder="0.00"
+                                required
+                                aria-invalid="{{ $errors->has('amount') ? 'true' : 'false' }}"
+                            >
 
-@else
+                            @error('amount')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Method</th>
-            <th>Reference</th>
-            <th>Amount</th>
-        </tr>
-        </thead>
+                        <div class="form-group">
+                            <label for="payment_date" class="form-label">
+                                Payment Date *
+                            </label>
 
-        <tbody>
-        @foreach ($invoice->payments as $payment)
-            <tr>
-                <td>
-                    {{ $payment->payment_date->format('d M Y') }}
-                </td>
+                            <input
+                                type="date"
+                                id="payment_date"
+                                name="payment_date"
+                                class="form-input"
+                                value="{{ old('payment_date', now()->toDateString()) }}"
+                                max="{{ now()->toDateString() }}"
+                                required
+                                aria-invalid="{{ $errors->has('payment_date') ? 'true' : 'false' }}"
+                            >
 
-                <td>
-                    {{ ucwords(str_replace('_', ' ', $payment->method)) }}
-                </td>
+                            @error('payment_date')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                <td>
-                    {{ $payment->reference ?? '—' }}
-                </td>
+                        <div class="form-group">
+                            <label for="method" class="form-label">
+                                Payment Method *
+                            </label>
 
-                <td>
-                    €{{ number_format($payment->amount_cents / 100, 2) }}
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+                            <select id="method"
+                                    name="method"
+                                    class="form-select"
+                                    required
+                                    aria-invalid="{{ $errors->has('method') ? 'true' : 'false' }}">
 
-@endif
+                                <option value="">Select payment method</option>
+
+                                @foreach ([
+                                    'bank_transfer' => 'Bank Transfer',
+                                    'cash' => 'Cash',
+                                    'card' => 'Card',
+                                    'other' => 'Other'
+                                ] as $value => $label)
+                                    <option value="{{ $value }}"
+                                        @selected(old('method') === $value)>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+
+                            @error('method')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reference" class="form-label">
+                                Payment Reference
+                            </label>
+
+                            <input
+                                type="text"
+                                id="reference"
+                                name="reference"
+                                class="form-input"
+                                maxlength="255"
+                                value="{{ old('reference') }}"
+                                placeholder="Optional transaction reference"
+                            >
+
+                            @error('reference')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group invoice-payment-full">
+                            <label for="notes" class="form-label">
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="notes"
+                                name="notes"
+                                class="form-textarea"
+                                rows="3"
+                                maxlength="2000"
+                                placeholder="Optional payment notes"
+                            >{{ old('notes') }}</textarea>
+
+                            @error('notes')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    <div class="invoice-payment-actions">
+                        <button type="submit" class="btn-primary">
+                            Record Payment
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        @elseif ($invoice->status === 'paid')
+
+            <div class="invoice-status-message">
+                This invoice has been fully paid.
+            </div>
+
+        @elseif ($invoice->status === 'draft')
+
+            <div class="invoice-status-message">
+                Mark this invoice as Sent before recording payments.
+            </div>
+
+        @endif
+
+    </section>
+
+    <!-- PAYMENT HISTORY -->
+    <section class="card invoice-detail-section">
+
+        <div class="invoice-section-heading">
+            <h2 class="card-title">Payment History</h2>
+            <p class="card-description">
+                All payments recorded for this invoice.
+            </p>
+        </div>
+
+        @if ($invoice->payments->isEmpty())
+
+            <div class="invoice-history-empty">
+                No payments have been recorded for this invoice.
+            </div>
+
+        @else
+
+            <div class="table-container">
+                <table class="data-table invoice-history-table">
+
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Method</th>
+                        <th>Reference</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @foreach ($invoice->payments as $payment)
+                        <tr>
+                            <td>
+                                {{ $payment->payment_date->format('d M Y') }}
+                            </td>
+
+                            <td>
+                                {{ ucwords(str_replace('_', ' ', $payment->method)) }}
+                            </td>
+
+                            <td>
+                                {{ $payment->reference ?? '—' }}
+                            </td>
+
+                            <td class="invoices-money">
+                                {{ $money($payment->amount_cents) }}
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+
+                </table>
+            </div>
+
+        @endif
+
+    </section>
+
+@endsection
