@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
@@ -16,21 +13,24 @@ return new class extends Migration
 
             $table->foreignId('invoice_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->restrictOnDelete();
 
-            $table->decimal('amount', 12, 2);
+            $table->unsignedBigInteger('amount_cents');
 
             $table->date('payment_date');
 
-            $table->string('method');
+            $table->string('method', 30);
+
+            $table->string('reference')->nullable();
+
+            $table->text('notes')->nullable();
 
             $table->timestamps();
+
+            $table->index(['invoice_id', 'payment_date']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('payments');

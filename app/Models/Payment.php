@@ -9,15 +9,17 @@ class Payment extends Model
 {
     protected $fillable = [
         'invoice_id',
-        'amount',
+        'amount_cents',
         'payment_date',
         'method',
+        'reference',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount' => 'decimal:2',
+            'amount_cents' => 'integer',
             'payment_date' => 'date',
         ];
     }
