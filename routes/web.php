@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,3 +68,5 @@ Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])
 Route::patch('/invoices/{invoice}/send', [InvoiceController::class, 'markAsSent'])
     ->middleware('auth')
     ->name('invoices.send');
+Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])
+    ->name('invoices.payments.store');
