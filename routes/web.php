@@ -5,68 +5,74 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 
+// Public homepage
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+// Protected routes
+Route::middleware('auth')->group(function () {
 
-//Customer route
+    // Dashboard
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-Route::get('/customers', [CustomerController::class, 'index'])
-    ->middleware('auth')
-    ->name('customers.index');
-Route::get('/customers/create', [CustomerController::class, 'create'])
-    ->middleware('auth')
-    ->name('customers.create');
-Route::post('/customers', [CustomerController::class, 'store'])
-    ->middleware('auth')
-    ->name('customers.store');
-Route::get('/customers/{customer}', [CustomerController::class, 'show'])
-    ->middleware('auth')
-    ->name('customers.show');
-Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])
-    ->middleware('auth')
-    ->name('customers.edit');
-Route::put('/customers/{customer}', [CustomerController::class, 'update'])
-    ->middleware('auth')
-    ->name('customers.update');
-Route::patch('/customers/{customer}/deactivate', [CustomerController::class, 'deactivate'])
-    ->middleware('auth')
-    ->name('customers.deactivate');
-Route::patch('/customers/{customer}/reactivate', [CustomerController::class, 'reactivate'])
-    ->middleware('auth')
-    ->name('customers.reactivate');
-Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('customers.destroy');
+    // Customer routes
+    Route::get('/customers', [CustomerController::class, 'index'])
+        ->name('customers.index');
 
-// Invoice Routes
-Route::get('/invoices', [InvoiceController::class, 'index'])
-    ->middleware('auth')
-    ->name('invoices.index');
-Route::post('/invoices', [InvoiceController::class, 'store'])
-    ->middleware('auth')
-    ->name('invoices.store');
-Route::get('/invoices/create', [InvoiceController::class, 'create'])
-    ->middleware('auth')
-    ->name('invoices.create');
-Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
-    ->middleware('auth')
-    ->name('invoices.show');
-Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])
-    ->middleware('auth')
-    ->name('invoices.edit');
-Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])
-    ->middleware('auth')
-    ->name('invoices.update');
-Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('invoices.destroy');
-Route::patch('/invoices/{invoice}/send', [InvoiceController::class, 'markAsSent'])
-    ->middleware('auth')
-    ->name('invoices.send');
-Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])
-    ->name('invoices.payments.store');
+    Route::get('/customers/create', [CustomerController::class, 'create'])
+        ->name('customers.create');
+
+    Route::post('/customers', [CustomerController::class, 'store'])
+        ->name('customers.store');
+
+    Route::get('/customers/{customer}', [CustomerController::class, 'show'])
+        ->name('customers.show');
+
+    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])
+        ->name('customers.edit');
+
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])
+        ->name('customers.update');
+
+    Route::patch('/customers/{customer}/deactivate', [CustomerController::class, 'deactivate'])
+        ->name('customers.deactivate');
+
+    Route::patch('/customers/{customer}/reactivate', [CustomerController::class, 'reactivate'])
+        ->name('customers.reactivate');
+
+    Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])
+        ->name('customers.destroy');
+
+    // Invoice routes
+    Route::get('/invoices', [InvoiceController::class, 'index'])
+        ->name('invoices.index');
+
+    Route::get('/invoices/create', [InvoiceController::class, 'create'])
+        ->name('invoices.create');
+
+    Route::post('/invoices', [InvoiceController::class, 'store'])
+        ->name('invoices.store');
+
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
+        ->name('invoices.show');
+
+    Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])
+        ->name('invoices.edit');
+
+    Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])
+        ->name('invoices.update');
+
+    Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])
+        ->name('invoices.destroy');
+
+    Route::patch('/invoices/{invoice}/send', [InvoiceController::class, 'markAsSent'])
+        ->name('invoices.send');
+
+    // Payment routes
+    Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])
+        ->name('invoices.payments.store');
+
+});
