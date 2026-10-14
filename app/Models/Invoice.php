@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\Money;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Support\Money;
+
 
 class Invoice extends Model
 {
@@ -96,5 +98,40 @@ class Invoice extends Model
     public function total(): float
     {
         return $this->totalCents() / 100;
+    }
+
+    public function isOverdue(): bool
+    {
+        return $this->status === 'sent'
+            && $this->balanceCents() > 0
+            && $this->due_date->lt(today());
+    }
+
+    public function isPartiallyPaid(): bool
+    {
+        return $this->status === 'sent'
+            && $this->paidCents() > 0
+            && $this->balanceCents() > 0;
+    }
+
+    public function displayStatus(): string
+    {
+        if ($this->status === 'paid') {
+            return 'Paid';
+        }
+
+        if ($this->status === 'draft') {
+            return 'Draft';
+        }
+
+        if ($this->isOverdue()) {
+            return 'Overdue';
+        }
+
+        if ($this->isPartiallyPaid()) {
+            return 'Partially Paid';
+        }
+
+        return 'Sent';
     }
 }

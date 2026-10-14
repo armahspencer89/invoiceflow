@@ -19,10 +19,15 @@ class InvoiceController extends Controller
     public function index(): View
     {
         $invoices = Invoice::query()
+
+            // Only invoices belonging to the authenticated user.
             ->whereHas('customer', function ($query) {
                 $query->where('user_id', auth()->id());
             })
+
+            // Load customer information and payment totals.
             ->with('customer')
+            ->withSum('payments as paid_cents', 'amount_cents')
 
             // Search by invoice number or customer name.
             ->when(request('search'), function ($query, $search) {
@@ -34,15 +39,42 @@ class InvoiceController extends Controller
                 });
             })
 
-            // Filter by stored invoice status.
+            // Filter by effective invoice status.
             ->when(request('status'), function ($query, $status) {
-                if (in_array($status, ['draft', 'sent', 'paid', 'overdue'], true)) {
-                    $query->where('status', $status);
+
+                if ($status === 'draft') {
+                    $query->where('status', 'draft');
+                }
+
+                elseif ($status === 'paid') {
+                    $query->where('status', 'paid');
+                }
+
+                elseif ($status === 'sent') {
+                    $query->where('status', 'sent')
+                        ->whereDoesntHave('payments')
+                        ->whereDate('due_date', '>=', today());
+                }
+
+                elseif ($status === 'partial') {
+                    $query->where('status', 'sent')
+                        ->whereHas('payments')
+                        ->whereDate('due_date', '>=', today());
+                }
+
+                elseif ($status === 'overdue') {
+                    $query->where('status', 'sent')
+                        ->whereDate('due_date', '<', today());
                 }
             })
 
+            // Newest invoices first.
             ->latest()
+
+            // Display 10 invoices per page.
             ->paginate(10)
+
+            // Preserve search and filter parameters during pagination.
             ->withQueryString();
 
         return view('invoices.index', compact('invoices'));
