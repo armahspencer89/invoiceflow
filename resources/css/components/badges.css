@@ -1,0 +1,35 @@
+/* InvoiceFlow — badges */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-draft {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-sent {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.status-paid {
+    background: var(--success-light);
+    color: #166534;
+}
+
+.status-partial {
+    background: var(--warning-light);
+    color: #92400e;
+}
+
+.status-overdue {
+    background: var(--danger-light);
+    color: #991b1b;
+}

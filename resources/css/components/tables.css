@@ -1,0 +1,44 @@
+/* InvoiceFlow — tables */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: white;
+}
+
+.data-table,
+.page-content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.data-table th,
+.data-table td,
+.page-content table th,
+.page-content table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.data-table th,
+.page-content table th {
+    background: #f8fafc;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.data-table tr:last-child td,
+.page-content table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tbody tr:hover,
+.page-content table tbody tr:hover {
+    background: #f8fafc;
+}

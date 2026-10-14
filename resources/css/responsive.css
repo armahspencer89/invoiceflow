@@ -1,0 +1,96 @@
+/* InvoiceFlow — responsive */
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .page-content {
+        padding: 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 14px;
+    }
+
+    .sidebar-brand {
+        padding: 0 4px 16px;
+    }
+
+    .sidebar-section-label,
+    .sidebar-bottom {
+        display: none;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+    }
+
+    .sidebar-link {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .topbar {
+        height: 60px;
+        padding: 0 18px;
+    }
+
+    .page-content {
+        padding: 20px 16px;
+    }
+
+    .topbar-username {
+        display: none;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: 16px 12px;
+    }
+
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .sidebar-link {
+        font-size: 13px;
+        padding: 9px 10px;
+    }
+
+    .nav-icon {
+        font-size: 17px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+}

@@ -1,0 +1,231 @@
+/* InvoiceFlow — app-layout */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    min-height: 100vh;
+    background: var(--navy);
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 12px 36px;
+    color: white;
+    font-size: 20px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.sidebar-brand:hover {
+    color: white;
+}
+
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--primary);
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.sidebar-section-label {
+    padding: 0 12px;
+    margin-bottom: 14px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    color: #94a3b8;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-link:hover {
+    background: var(--navy-light);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: var(--primary);
+    color: white;
+}
+
+.nav-icon {
+    font-size: 20px;
+    width: 24px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 24px;
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 8px;
+    border-top: 1px solid #334155;
+}
+
+.user-avatar,
+.topbar-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-details strong {
+    color: white;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-details small {
+    color: #94a3b8;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.logout-button {
+    width: 100%;
+    padding: 11px 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--navy-light);
+    color: #cbd5e1;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.logout-button:hover {
+    background: #334155;
+    color: white;
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar {
+    height: 72px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+}
+
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.topbar-brand {
+    color: var(--navy);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.topbar-username {
+    color: #475569;
+    font-size: 14px;
+}
+
+.page-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 36px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 750;
+    color: var(--navy);
+}
+
+.page-subtitle {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.text-muted {
+    color: var(--muted);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
+}
