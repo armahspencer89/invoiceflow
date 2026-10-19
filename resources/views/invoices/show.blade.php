@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Invoice Details - InvoiceFlow')
@@ -26,14 +25,27 @@
             </p>
         </div>
 
-        <a href="{{ route('invoices.index') }}" class="btn-secondary">
-            ← Back to Invoices
-        </a>
+        <div class="invoice-actions-list">
+            <a href="{{ route('invoices.pdf', $invoice) }}"
+               class="btn-primary invoice-action-button">
+                Download PDF
+            </a>
+
+            <a href="{{ route('invoices.index') }}" class="btn-secondary invoice-action-button">
+                ← Back to Invoices
+            </a>
+        </div>
     </div>
 
     @if (session('success'))
         <div class="alert alert-success" role="status">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
         </div>
     @endif
 

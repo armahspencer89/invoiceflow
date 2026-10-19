@@ -5,6 +5,7 @@ use App\Http\Controllers\BusinessProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\PaymentController;
 
 // Public homepage
@@ -59,6 +60,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])
         ->name('invoices.show');
+
+    Route::get('/invoices/{invoice}/pdf', [InvoicePdfController::class, 'download'])
+        ->name('invoices.pdf');
 
     Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])
         ->name('invoices.edit');
