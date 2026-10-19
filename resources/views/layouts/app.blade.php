@@ -64,6 +64,15 @@
                 <span>Invoices</span>
             </a>
 
+
+            <a href="{{ route('business-profile.edit') }}"
+               class="sidebar-link {{ request()->routeIs('business-profile.*') ? 'active' : '' }}"
+               @if(request()->routeIs('business-profile.*')) aria-current="page" @endif>
+                <span class="nav-icon" aria-hidden="true">▣</span>
+                <span>Business Profile</span>
+            </a>
+
+
         </nav>
 
         <div class="sidebar-bottom">

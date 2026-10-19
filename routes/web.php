@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BusinessProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
@@ -74,5 +75,12 @@ Route::middleware('auth')->group(function () {
     // Payment routes
     Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])
         ->name('invoices.payments.store');
+
+    // Business profile settings
+    Route::get('/business-profile', [BusinessProfileController::class, 'edit'])
+        ->name('business-profile.edit');
+
+    Route::put('/business-profile', [BusinessProfileController::class, 'update'])
+        ->name('business-profile.update');
 
 });
