@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BusinessProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceEmailController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\PaymentController;
@@ -86,5 +87,9 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/business-profile', [BusinessProfileController::class, 'update'])
         ->name('business-profile.update');
+
+    //email
+    Route::post('/invoices/{invoice}/email', [InvoiceEmailController::class, 'send'])
+        ->name('invoices.email');
 
 });

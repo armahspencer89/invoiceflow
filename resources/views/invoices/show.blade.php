@@ -31,6 +31,24 @@
                 Download PDF
             </a>
 
+            {{-- Email Invoice Action --}}
+            @if (in_array($invoice->status, ['sent', 'paid'], true))
+                <form
+                    method="POST"
+                    action="{{ route('invoices.email', $invoice) }}"
+                    onsubmit="return confirm('Email invoice {{ $invoice->invoice_number }} to {{ $invoice->customer->email }}?')"
+                >
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="btn-primary invoice-action-button"
+                    >
+                        Email Invoice
+                    </button>
+                </form>
+            @endif
+
             <a href="{{ route('invoices.index') }}" class="btn-secondary invoice-action-button">
                 ← Back to Invoices
             </a>
