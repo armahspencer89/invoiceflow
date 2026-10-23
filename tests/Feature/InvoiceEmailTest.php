@@ -30,14 +30,29 @@ class InvoiceEmailTest extends TestCase
         $customer->save();
 
 
-        $invoice = Invoice::create([
-            'customer_id' => $customer->id,
-            'invoice_number' => 'EMAIL-' . Str::uuid(),
-            'invoice_date' => today()->subDays(5),
-            'due_date' => today()->addDays(15),
-            'status' => $status,
-            'vat_rate' => '21.00',
-        ]);
+        $invoice = new Invoice();
+
+        $invoice->user_id = $user->id;
+        $invoice->customer_id = $customer->id;
+
+        $invoice->invoice_number = $status === 'draft'
+            ? null
+            : 'INV-' . now()->format('Y') . '-0001';
+
+        $invoice->invoice_date = $status === 'draft'
+            ? today()->subDays(5)
+            : today();
+
+        $invoice->due_date = today()->addDays(15);
+
+        $invoice->status = $status;
+        $invoice->vat_rate = '21.00';
+
+        $invoice->issued_at = $status === 'draft'
+            ? null
+            : now();
+
+        $invoice->save();
 
         $invoice->lines()->create([
             'description' => 'Web Development',

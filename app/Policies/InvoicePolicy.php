@@ -8,14 +8,21 @@ use App\Models\User;
 class InvoicePolicy
 {
     /**
+     * Verify that the user owns both the invoice
+     * and the customer associated with it.
+     */
+    private function ownsInvoice(User $user, Invoice $invoice): bool
+    {
+        return (int) $invoice->user_id === (int) $user->id
+            && (int) $invoice->customer->user_id === (int) $user->id;
+    }
+
+    /**
      * Determine whether the user can view the invoice.
      */
     public function view(User $user, Invoice $invoice): bool
     {
-        // Invoice ownership is indirect:
-        // User → Customer → Invoice.
-        // Only the user who owns the invoice's customer can view it.
-        return $invoice->customer->user_id === $user->id;
+        return $this->ownsInvoice($user, $invoice);
     }
 
     /**
@@ -23,8 +30,8 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        // Use the same ownership rule when modifying an invoice.
-        return $invoice->customer->user_id === $user->id;
+        return $this->ownsInvoice($user, $invoice)
+            && $invoice->status === 'draft';
     }
 
     /**
@@ -32,12 +39,16 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $invoice->customer->user_id === $user->id
+        return $this->ownsInvoice($user, $invoice)
             && $invoice->status === 'draft';
     }
+
+    /**
+     * Determine whether the user can issue the invoice.
+     */
     public function markAsSent(User $user, Invoice $invoice): bool
     {
-        return $invoice->customer->user_id === $user->id
+        return $this->ownsInvoice($user, $invoice)
             && $invoice->status === 'draft';
     }
 }

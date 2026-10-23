@@ -69,9 +69,8 @@ class PaymentController extends Controller
 
             // The invoice becomes Paid only when fully settled.
             if ($amountCents === $balanceCents) {
-                $lockedInvoice->update([
-                    'status' => 'paid',
-                ]);
+                $lockedInvoice->status = 'paid';
+                $lockedInvoice->save();
             }
         }, 3);
 

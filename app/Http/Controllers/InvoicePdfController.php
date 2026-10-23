@@ -37,11 +37,13 @@ class InvoicePdfController extends Controller
             $businessProfile
         );
 
+        $filename = $invoice->invoice_number
+            ?? 'draft-' . $invoice->id;
+
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' =>
-                'attachment; filename="' .
-                $invoice->invoice_number . '.pdf"',
+                'attachment; filename="' . $filename . '.pdf"',
         ]);
     }
 }

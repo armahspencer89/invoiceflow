@@ -13,10 +13,8 @@ class Invoice extends Model
 {
     protected $fillable = [
         'customer_id',
-        'invoice_number',
         'invoice_date',
         'due_date',
-        'status',
         'vat_rate',
     ];
 
@@ -25,6 +23,7 @@ class Invoice extends Model
         return [
             'invoice_date' => 'date',
             'due_date' => 'date',
+            'issued_at' => 'datetime',
             'vat_rate' => 'decimal:2',
         ];
     }
@@ -32,6 +31,10 @@ class Invoice extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function lines(): HasMany

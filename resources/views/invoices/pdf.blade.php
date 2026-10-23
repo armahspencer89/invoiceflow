@@ -4,7 +4,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invoice {{ $invoice->invoice_number }}</title>
+    <title>
+        {{ $invoice->status === 'draft'
+            ? 'Draft Invoice #' . $invoice->id
+            : 'Invoice ' . $invoice->invoice_number }}
+    </title>
 </head>
 
 <body>
@@ -20,15 +24,28 @@
         </td>
 
         <td class="invoice-heading">
-            <h1>INVOICE</h1>
-            <div class="invoice-number">
-                {{ $invoice->invoice_number }}
-            </div>
+            @if ($invoice->status === 'draft')
+                <h1>DRAFT INVOICE</h1>
+                <div class="invoice-number">
+                    Draft #{{ $invoice->id }}
+                </div>
+            @else
+                <h1>INVOICE</h1>
+                <div class="invoice-number">
+                    {{ $invoice->invoice_number }}
+                </div>
+            @endif
         </td>
     </tr>
 </table>
 
 <div class="divider"></div>
+@if ($invoice->status === 'draft')
+    <p style="text-align: center; font-weight: bold; color: #b45309;">
+        DRAFT — Not an officially issued invoice.
+        Do not use this document for payment.
+    </p>
+@endif
 
 {{-- BUSINESS AND CUSTOMER DETAILS --}}
 <table class="party-table">
@@ -213,10 +230,12 @@
             </p>
         @endif
 
-        <p>
-            <strong>Payment Reference:</strong>
-            {{ $invoice->invoice_number }}
-        </p>
+        @if ($invoice->status !== 'draft')
+            <p>
+                <strong>Payment Reference:</strong>
+                {{ $invoice->invoice_number }}
+            </p>
+        @endif
     </div>
 @endif
 

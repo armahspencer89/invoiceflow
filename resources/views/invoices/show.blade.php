@@ -17,7 +17,11 @@
     <div class="page-header">
         <div>
             <h1 class="page-title">
-                Invoice {{ $invoice->invoice_number }}
+                @if ($invoice->status === 'draft')
+                    Draft #{{ $invoice->id }}
+                @else
+                    Invoice {{ $invoice->invoice_number }}
+                @endif
             </h1>
 
             <p class="page-subtitle">
@@ -108,7 +112,9 @@
 
                 <div class="invoice-detail-item">
                     <dt>Invoice Number</dt>
-                    <dd>{{ $invoice->invoice_number }}</dd>
+                    <dd>
+                        {{ $invoice->invoice_number ?? 'Not assigned (Draft)' }}
+                    </dd>
                 </div>
 
                 <div class="invoice-detail-item">
@@ -166,7 +172,7 @@
 
                     <form method="POST"
                           action="{{ route('invoices.send', $invoice) }}"
-                          onsubmit="return confirm('Mark this invoice as sent? You will no longer be able to edit it.')">
+                          onsubmit="return confirm('Issue this invoice? An official invoice number will be assigned permanently, and the invoice can no longer be edited.')">
 
                         @csrf
                         @method('PATCH')

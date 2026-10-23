@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class InvoicePdfTest extends TestCase
@@ -30,14 +30,26 @@ class InvoicePdfTest extends TestCase
 
         $customer->save();
 
-        $invoice = Invoice::create([
-            'customer_id' => $customer->id,
-            'invoice_number' => 'PDF-' . Str::uuid(),
-            'invoice_date' => today()->subDays(5),
-            'due_date' => today()->addDays(15),
-            'status' => $status,
-            'vat_rate' => $vatRate,
-        ]);
+        $invoice = new Invoice();
+
+        $invoice->user_id = $user->id;
+        $invoice->customer_id = $customer->id;
+
+        $invoice->invoice_number = $status === 'draft'
+            ? null
+            : 'INV-' . now()->format('Y') . '-0001';
+
+        $invoice->invoice_date = today()->subDays(5);
+        $invoice->due_date = today()->addDays(15);
+
+        $invoice->status = $status;
+        $invoice->vat_rate = $vatRate;
+
+        $invoice->issued_at = $status === 'draft'
+            ? null
+            : now();
+
+        $invoice->save();
 
         $invoice->lines()->create([
             'description' => 'Website Development',

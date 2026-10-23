@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\InvoiceNumberService;
+use Illuminate\Validation\ValidationException;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Invoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class InvoiceController extends Controller
@@ -20,7 +21,10 @@ class InvoiceController extends Controller
     {
         $invoices = Invoice::query()
 
-            // Only invoices belonging to the authenticated user.
+            // The invoice must belong to the authenticated user.
+            ->where('user_id', auth()->id())
+
+            // Its customer must also belong to the authenticated user.
             ->whereHas('customer', function ($query) {
                 $query->where('user_id', auth()->id());
             })
@@ -113,13 +117,18 @@ class InvoiceController extends Controller
 
         // Create the invoice after the ownership check succeeds.
         $invoice = DB::transaction(function () use ($customer, $validated) {
-            $invoice = $customer->invoices()->create([
-                'invoice_number' => 'INV-' . Str::uuid(),
-                'invoice_date' => $validated['invoice_date'],
-                'due_date' => $validated['due_date'],
-                'status' => 'draft',
-                'vat_rate' => $validated['vat_rate'],
-            ]);
+            $invoice = new Invoice();
+
+            $invoice->user_id = auth()->id();
+            $invoice->customer_id = $customer->id;
+            $invoice->invoice_number = null;
+            $invoice->invoice_date = $validated['invoice_date'];
+            $invoice->due_date = $validated['due_date'];
+            $invoice->status = 'draft';
+            $invoice->vat_rate = $validated['vat_rate'];
+            $invoice->issued_at = null;
+
+            $invoice->save();
 
             foreach ($validated['lines'] as $line) {
                 $invoice->lines()->create([
@@ -220,17 +229,28 @@ class InvoiceController extends Controller
     /**
      * Mark a draft invoice as sent.
      */
-    public function markAsSent(Invoice $invoice): RedirectResponse
-    {
+    public function markAsSent(
+        Invoice $invoice,
+        InvoiceNumberService $numberService
+    ) {
         Gate::authorize('markAsSent', $invoice);
 
-        $invoice->update([
-            'status' => 'sent',
-        ]);
+        try {
+            $issuedInvoice = $numberService->issue($invoice);
+        } catch (ValidationException $exception) {
+            return redirect()
+                ->route('invoices.edit', $invoice)
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
 
         return redirect()
-            ->route('invoices.show', $invoice)
-            ->with('success', 'Invoice marked as sent successfully.');
+            ->route('invoices.show', $issuedInvoice)
+            ->with(
+                'success',
+                'Invoice ' . $issuedInvoice->invoice_number
+                . ' has been issued successfully.'
+            );
     }
 
     /**

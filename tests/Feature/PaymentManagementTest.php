@@ -27,14 +27,34 @@ class PaymentManagementTest extends TestCase
 
         $customer->save();
 
-        $invoice = Invoice::create([
-            'customer_id' => $customer->id,
-            'invoice_number' => 'TEST-' . Str::uuid(),
-            'invoice_date' => today()->subDays(10),
-            'due_date' => $dueDate ?? today()->addDays(10)->toDateString(),
-            'status' => $status,
-            'vat_rate' => 0,
-        ]);
+
+        $invoice = new Invoice();
+
+        $invoice->user_id = $user->id;
+        $invoice->customer_id = $customer->id;
+
+        // Draft invoices do not receive official numbers.
+        $invoice->invoice_number = $status === 'draft'
+            ? null
+            : 'INV-' . now()->format('Y') . '-0001';
+
+        // These fixtures represent existing invoices.
+        // Historical dates are needed for overdue tests.
+        $invoice->invoice_date = today()->subDays(10);
+
+        $invoice->due_date = $dueDate
+            ?? today()->addDays(10)->toDateString();
+
+        $invoice->status = $status;
+        $invoice->vat_rate = 0;
+
+        // Only issued invoices have an issuance timestamp.
+        $invoice->issued_at = $status === 'draft'
+            ? null
+            : now();
+
+        $invoice->save();
+
 
         // Invoice total: €100.00
         $invoice->lines()->create([
