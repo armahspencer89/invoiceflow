@@ -24,6 +24,7 @@
     color: #166534;
 }
 
+.status-partially-paid,
 .status-partial {
     background: var(--warning-light);
     color: #92400e;

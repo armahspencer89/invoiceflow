@@ -18,25 +18,27 @@ final class Money
         [$euros, $cents] = explode('.', $rounded);
 
         // Restrict conversion to the supported integer range.
-        $maximumEuros = (string) intdiv(PHP_INT_MAX, 100);
+        $maximumCents = (string) PHP_INT_MAX;
 
+        // Construct the complete amount in cents as a string.
+        $amountInCents = ltrim($euros . $cents, '0');
+
+        if ($amountInCents === '') {
+            $amountInCents = '0';
+        }
+
+        // Check the full cent amount before converting to integer.
         if (
-            strlen($euros) > strlen($maximumEuros)
+            strlen($amountInCents) > strlen($maximumCents)
             || (
-                strlen($euros) === strlen($maximumEuros)
-                && strcmp($euros, $maximumEuros) > 0
+                strlen($amountInCents) === strlen($maximumCents)
+                && strcmp($amountInCents, $maximumCents) > 0
             )
         ) {
             throw new InvalidArgumentException('Monetary amount is too large.');
         }
 
-        $result = ((int) $euros * 100) + (int) $cents;
-
-        if ($result < 0) {
-            throw new InvalidArgumentException('Monetary amount is too large.');
-        }
-
-        return $result;
+        return (int) $amountInCents;
     }
 
     public static function multiplyToCents(

@@ -79,6 +79,10 @@ class Invoice extends Model
 
     public function paidCents(): int
     {
+        if ($this->relationLoaded('payments')) {
+            return (int) $this->payments->sum('amount_cents');
+        }
+
         return (int) $this->payments()->sum('amount_cents');
     }
 

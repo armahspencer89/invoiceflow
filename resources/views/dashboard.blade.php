@@ -123,7 +123,13 @@
                     @foreach ($recentInvoices as $invoice)
                         <tr>
                             <td>
-                                {{ $invoice->invoice_number }}
+                                @if ($invoice->status === 'draft')
+                                    <span class="text-muted">
+                                    Draft #{{ $invoice->id }}
+                                </span>
+                                @else
+                                    {{ $invoice->invoice_number }}
+                                @endif
                             </td>
 
                             <td>
@@ -140,11 +146,12 @@
 
                             <td>
                                 @php
-                                    $status = strtolower($invoice->displayStatus());
+                                    $statusLabel = $invoice->displayStatus();
+                                    $statusClass = \Illuminate\Support\Str::slug($statusLabel);
                                 @endphp
 
-                                <span class="status-badge status-{{ $status }}">
-                                    {{ ucfirst($status) }}
+                                <span class="status-badge status-{{ $statusClass }}">
+                                    {{ $statusLabel }}
                                 </span>
                             </td>
 
